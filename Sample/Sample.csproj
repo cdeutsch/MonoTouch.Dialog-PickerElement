@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
+    <Reference Include="MonoTouch.Dialog-1" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -74,10 +75,6 @@
     <ProjectReference Include="..\MonoTouch.Dialog.PickerElement\MonoTouch.Dialog.PickerElement.csproj">
       <Project>{1D6E5DB1-9F1E-432E-98FC-E45453688661}</Project>
       <Name>MonoTouch.Dialog.PickerElement</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\MonoTouch.Dialog\MonoTouch.Dialog\MonoTouch.Dialog.csproj">
-      <Project>{3FFBFFF8-5560-4EDE-82E5-3FFDFBBA8A50}</Project>
-      <Name>MonoTouch.Dialog</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -71,11 +71,11 @@ namespace MonoTouch.Dialog.PickerElement
 				foreach (var e in (Parent as Section).Elements){
 					var ee = e as EntryElement;
 					if (ee != null) {
-						// hide picker when other element is selected. Need to get "Started" is MonoTouch.Dialog core.
-						((EntryElement)e).EntryStarted += delegate {
-							ComboBox.HidePicker();
-							//dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
-						};
+						// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable hiding picker when other element is selected:
+						// https://github.com/crdeutsch/MonoTouch.Dialog
+						//((EntryElement)e).EntryStarted += delegate {
+						//	ComboBox.HidePicker();
+						//};
 						ee.ResignFirstResponder(false);
 					}
 				}
