@@ -33,7 +33,9 @@ namespace MonoTouch.Dialog.PickerElement
 			this.ComboBox.TextAlignment = UITextAlignment.Right;
 			this.ComboBox.BorderStyle = UITextBorderStyle.None;
 			this.ComboBox.PickerClosed += delegate {
-				Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
+				if (Dvc != null) {
+					Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
+				}
 			};
 			this.ComboBox.ValueChanged += delegate {
 				Value = ComboBox.Text;
@@ -103,6 +105,9 @@ namespace MonoTouch.Dialog.PickerElement
 			return base.GetCell (tv);
 		}
 		
+		public void HidePicker() {
+			ComboBox.HidePicker();
+		}
 	}
 	
 	
