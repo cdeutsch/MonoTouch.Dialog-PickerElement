@@ -58,6 +58,14 @@ namespace MonoTouch.Dialog.PickerElement
 		private bool wiredStarted = false;
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
+			Element root = Parent;
+			while (root.Parent != null) {
+				root = root.Parent;
+			}
+			
+			// get rid of keyboard if another element triggered it.
+			ResignFirstResponders((RootElement)root);
+			
 			Dvc = dvc;
 			base.Selected (dvc, tableView, path);
 			ComboBox.ShowPicker();
@@ -70,26 +78,23 @@ namespace MonoTouch.Dialog.PickerElement
 				});
 			dvc.NavigationItem.RightBarButtonItem = doneButton;
 			if (!wiredStarted) {
-				foreach (var e in (Parent as Section).Elements){
-					var ee = e as EntryElement;
-					if (ee != null) {
-						// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable hiding picker when other element is selected:
-						// https://github.com/crdeutsch/MonoTouch.Dialog
-						//((EntryElement)e).EntryStarted += delegate {
-						//	ComboBox.HidePicker();
-						//};
-						ee.ResignFirstResponder(false);
+				foreach(var sect in (root as RootElement)) {
+					foreach(var e in sect.Elements) {
+						var ee = e as EntryElement;
+						if (ee != null) {
+							// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable hiding picker when other element is selected:
+							// https://github.com/crdeutsch/MonoTouch.Dialog
+							//((EntryElement)e).EntryStarted += delegate {
+							//	ComboBox.HidePicker();
+							//};
+							ee.ResignFirstResponder(false);
+						}
 					}
 				}
 				wiredStarted = true;
 			}
-			// get rid of keyboard if another element triggered it.
-			foreach (var e in (Parent as Section).Elements){
-				var ee = e as EntryElement;
-				if (ee != null) {
-					ee.ResignFirstResponder(false);
-				}
-			}
+			
+			
 		}
 		public override void Deselected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
@@ -107,6 +112,21 @@ namespace MonoTouch.Dialog.PickerElement
 		
 		public void HidePicker() {
 			ComboBox.HidePicker();
+		}
+		
+		private void ResignFirstResponders(RootElement root) {
+			foreach(var sect in root) {
+				foreach(var e in sect.Elements) {
+					var ee = e as EntryElement;
+					if (ee != null) {
+						ee.ResignFirstResponder(false);
+					}
+					var pe = e as PickerElement;
+					if (pe != null && pe != this) {
+						pe.HidePicker();
+					}
+				}
+			}
 		}
 	}
 	

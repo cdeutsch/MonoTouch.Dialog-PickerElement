@@ -115,6 +115,8 @@ namespace ClanceysLib
 			pickerView.Frame = pickerView.Frame.SetLocation(new PointF(0,parentFrame.Height - pickerView.Frame.Height));
 			UIView.CommitAnimations();	
 			
+			// fixes bug of empty rows when you have multiple picker views in one view.
+			pickerView.ReloadAllComponents();
 		}
 		bool isHiding;
 		public void HidePicker()
