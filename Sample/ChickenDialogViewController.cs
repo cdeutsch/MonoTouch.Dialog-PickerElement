@@ -23,21 +23,15 @@ namespace Sample
 		{
 			base.ViewWillAppear(animated);
 			
-			var items = new List<PickerLabel>();
-			var rect = new RectangleF(0,0,300f,40f);
+			var items = new List<object>();
 		
 			for(int i = 0;i <= 10;i++)
 			{
-				items.Add (new PickerLabel (rect) { 
-					Text = i.ToString(),					
-					TextAlignment = UITextAlignment.Center,
-					BackgroundColor = UIColor.Clear,
-					Font = UIFont.SystemFontOfSize (24.0f)
-				});
+				items.Add (i);
 			}
 			chickenName = new EntryElement("Name", null, "");
-			rating = new PickerElement("Rating", items.ToArray(), "Text") {
-				TextAlignment = UITextAlignment.Left
+			rating = new PickerElement("Rating", items.ToArray(), null) {
+				Width = 40f
 			};
 			// set initial rating.
 			rating.Value = "5";

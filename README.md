@@ -20,5 +20,14 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 ## Differences from Clancey version ##
 
 * Updated it to hide the keyboard or picker when selecting different cells to edit.
-* Changed so the Items in the Picker list are UIView's for greater customization.
 * Actually has a sample of how to use it. ;)
+* Independent DisplayMember and ValueMember
+
+
+## History ##
+
+### 3/6/2012 ###
+
+* Removed support for using a UIView for the rows since the picker often loses the rows when there are multiple pickers.
+* Added support for setting DisplayMember and ValueMember independently.
+* Added support for setting the Width of the Picker.

@@ -52,6 +52,27 @@ namespace MonoTouch.Dialog.PickerElement
 			ComboBox.SetSelectedIndex(index);
 		}
 		
+		/// <summary>
+		/// Can be a collection of anyting. If you don't set the ValueMember or DisplayMember, it will use ToString() for the value and Title.
+		/// </summary>
+		public object [] Items {
+			get{return ComboBox.Items;}
+			set{ComboBox.Items = value;}
+		}
+		
+		public string DisplayMember {
+			get{return ComboBox.DisplayMember;}
+			set {ComboBox.DisplayMember = value;}
+		}
+		public string ValueMember {
+			get{return ComboBox.ValueMember;}
+			set {ComboBox.ValueMember = value;}
+		}
+		public float Width {
+			get{return ComboBox.Width;}
+			set {ComboBox.Width = value;}
+		}
+		
 		private DialogViewController Dvc;
 		private UIBarButtonItem oldRightBtn;
 		private UIBarButtonItem doneButton;

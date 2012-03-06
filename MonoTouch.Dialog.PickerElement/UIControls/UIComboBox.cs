@@ -72,6 +72,9 @@ namespace ClanceysLib
 			pickerView.BringSubviewToFront(closeBtn);
 		}
 		
+		/// <summary>
+		/// Can be a collection of anyting. If you don't set the ValueMember or DisplayMember, it will use ToString() for the value and Title.
+		/// </summary>
 		public object [] Items {
 			get{return pickerView.Items;}
 			set{pickerView.Items = value;}
@@ -81,6 +84,15 @@ namespace ClanceysLib
 			get{return pickerView.DisplayMember;}
 			set {pickerView.DisplayMember = value;}
 		}
+		public string ValueMember {
+			get{return pickerView.ValueMember;}
+			set {pickerView.ValueMember = value;}
+		}
+		public float Width {
+			get{return pickerView.Width;}
+			set {pickerView.Width = value;}
+		}
+		
 		bool pickerVisible;
 		
 		public void ShowPicker()
@@ -113,10 +125,7 @@ namespace ClanceysLib
 			
 			
 			pickerView.Frame = pickerView.Frame.SetLocation(new PointF(0,parentFrame.Height - pickerView.Frame.Height));
-			UIView.CommitAnimations();	
-			
-			// fixes bug of empty rows when you have multiple picker views in one view.
-			pickerView.ReloadAllComponents();
+			UIView.CommitAnimations();				
 		}
 		bool isHiding;
 		public void HidePicker()
@@ -179,6 +188,7 @@ namespace ClanceysLib
 		public PickerView () : base ()
 		{
 			this.ShowSelectionIndicator = true;
+			this.Width = 300f;
 		}	
 		
 		object[] items;
@@ -192,7 +202,10 @@ namespace ClanceysLib
 					IndexChanged(this,null);
 				}
 		}		
-		public string DisplayMember{get;set;}
+		
+		public string DisplayMember {get;set;}
+		public string ValueMember {get;set;}
+		public float Width {get;set;}
 		
 		int selectedIndex;
 		public int SelectedIndex{
@@ -210,9 +223,9 @@ namespace ClanceysLib
 		
 		public string StringValue {
 			get{
-				if(string.IsNullOrEmpty(DisplayMember))
+				if(string.IsNullOrEmpty(ValueMember))
 					return SelectedItem.ToString();
-				return Util.GetPropertyValue(SelectedItem,DisplayMember);
+				return Util.GetPropertyValue(SelectedItem,ValueMember);
 			}
 		}
 		
@@ -226,7 +239,7 @@ namespace ClanceysLib
 		{		
 			Picker = picker;			
 		}
-
+		
 		public override int GetComponentCount (UIPickerView uipv)
 		{	
 			return (1);	
@@ -241,15 +254,14 @@ namespace ClanceysLib
 		
 		public override string GetTitle (UIPickerView uipv, int row, int comp)
 		{
-			
 			//each component would get its own title.
-			
 			var theObject = Picker.Items[row];
 			if(string.IsNullOrEmpty(Picker.DisplayMember))
 				return theObject.ToString();
 			return Util.GetPropertyValue(theObject,Picker.DisplayMember);
 		}
-
+		
+		
 		
 		public override void Selected (UIPickerView uipv, int row, int comp)
 		{
@@ -259,7 +271,7 @@ namespace ClanceysLib
 
 		public override float GetComponentWidth (UIPickerView uipv, int comp)
 		{
-			return (300f);	
+			return Picker.Width;
 		}
 
 		public override float GetRowHeight (UIPickerView uipv, int comp)
@@ -267,9 +279,12 @@ namespace ClanceysLib
 			return (40f);	
 		}
 		
-		public override UIView GetView (UIPickerView pickerView, int row, int component, UIView view) {
-			return (UIView)Picker.Items[row];
-		}
+		//CDEUTSCH: there are issues with this losing the contents of rows when there are multiple pickers on a page.
+		//public override UIView GetView (UIPickerView pickerView, int row, int component, UIView view) {
+		//	((UIView)Picker.Items[row]).ReloadInputViews();
+		//	return (UIView)Picker.Items[row];
+		//}
+		
 	}
 }
 
