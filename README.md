@@ -26,6 +26,10 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## History ##
 
+### 3/14/2012 ###
+
+* Created DateTimeElement2 that creates a UIDatePicker on the same view just like the PickerElement, instead of pushing a new view like the regular MonoTouch.Dialog DateTimeElement.
+
 ### 3/6/2012 ###
 
 * Removed support for using a UIView for the rows since the picker often loses the rows when there are multiple pickers.

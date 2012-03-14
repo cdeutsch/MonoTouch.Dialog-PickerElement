@@ -14,6 +14,7 @@ namespace Sample
 	{
 		EntryElement chickenName = null;
 		PickerElement rating = null;
+		DateTimeElement2 date = null;
 		
 		public ChickenDialogViewController () : base (null)
 		{	
@@ -30,17 +31,25 @@ namespace Sample
 				items.Add (i);
 			}
 			chickenName = new EntryElement("Name", null, "");
+			
 			rating = new PickerElement("Rating", items.ToArray(), null) {
-				Width = 40f
-			};
+				Width = 40f,
+				TextAlignment = UITextAlignment.Left
+			};			
 			// set initial rating.
 			rating.Value = "5";
 			rating.SetSelectedValue(rating.Value);
 			
+			date = new DateTimeElement2("Date", DateTime.Now) {
+				TextAlignment = UITextAlignment.Left,
+				Mode = UIDatePickerMode.Date
+			};
+			
 			Root = new RootElement("Rate Chicken") {
 				new Section() {
 					chickenName,
-					rating
+					rating,
+					date
 				}
 			};		
 		}

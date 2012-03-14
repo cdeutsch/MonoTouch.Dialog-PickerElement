@@ -142,6 +142,10 @@ namespace MonoTouch.Dialog.PickerElement
 					if (ee != null) {
 						ee.ResignFirstResponder(false);
 					}
+					var dte = e as DateTimeElement2;
+					if (dte != null) {
+						dte.HidePicker();
+					}
 					var pe = e as PickerElement;
 					if (pe != null && pe != this) {
 						pe.HidePicker();
