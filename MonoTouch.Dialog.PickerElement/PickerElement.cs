@@ -61,6 +61,12 @@ namespace MonoTouch.Dialog.PickerElement
 			ComboBox.SetSelectedIndex(index);
 		}
 		
+		public Object SelectedItem {
+			get {
+				return ComboBox.SelectedItem;
+			}
+		}
+		
 		/// <summary>
 		/// Can be a collection of anyting. If you don't set the ValueMember or DisplayMember, it will use ToString() for the value and Title.
 		/// </summary>

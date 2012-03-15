@@ -34,6 +34,8 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 * Worked on adding support for when "Next" key is pressed on regular EntryElement. Unfortunately this will require another MonoTouch.Dialog change to work. 
 
+* Added SelectedItem property to PickerElement so you can retrieve the selected object instead of just the value.
+
 ### 3/6/2012 ###
 
 * Removed support for using a UIView for the rows since the picker often loses the rows when there are multiple pickers.
