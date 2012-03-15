@@ -32,6 +32,7 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 * Refactored PickerElement and DateTimeElement2 to inherit from EntryElement to fix issue with labels lining up, and deleted ReadOnlyStringElement.cs
 
+* Worked on adding support for when "Next" key is pressed on regular EntryElement. Unfortunately this will require another MonoTouch.Dialog change to work. 
 
 ### 3/6/2012 ###
 

@@ -32,8 +32,9 @@ namespace MonoTouch.Dialog.PickerElement
 		
 		public event NSAction Tapped;
 		
-		public PickerElement (string caption, object[] Items , string DisplayMember) : base (caption, null, null) 
+		public PickerElement (string caption, object[] Items , string DisplayMember, DialogViewController dvc) : base (caption, null, null) 
 		{
+			this.Dvc = dvc;
 			this.ComboBox = new UIComboBox(RectangleF.Empty);
 			this.ComboBox.Items = Items;
 			this.ComboBox.DisplayMember = DisplayMember;
@@ -88,36 +89,47 @@ namespace MonoTouch.Dialog.PickerElement
 		
 		public bool ShouldDeselect = true;		
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
-		{
-			Element root = Parent;
-			while (root.Parent != null) {
-				root = root.Parent;
-			}
-			
-			// get rid of keyboard if another element triggered it.
-			ResignFirstResponders((RootElement)root);
-			
-			Dvc = dvc;
-			
+		{	
 			if (Tapped != null)
 				Tapped ();
 			if(ShouldDeselect)
 				tableView.DeselectRow (path, true);
+		
+			ShowPicker();					
+		}
+		public override void Deselected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
+		{			
+			base.Deselected (dvc, tableView, path);
+			HidePicker();
+		}
+		
+		public void ShowPicker() {
+			// get rid of keyboard if another element triggered it.
+			Element root = Parent;
+			while (root.Parent != null) {
+				root = root.Parent;
+			}					
+			ResignFirstResponders((RootElement)root);
 			
 			ComboBox.ShowPicker();
-			if(dvc.NavigationItem.RightBarButtonItem != doneButton)
-				oldRightBtn = dvc.NavigationItem.RightBarButtonItem;
-			if(doneButton == null)
-				doneButton = new UIBarButtonItem("Done",UIBarButtonItemStyle.Bordered, delegate{
-					ComboBox.HidePicker();	
-					dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
-				});
-			dvc.NavigationItem.RightBarButtonItem = doneButton;
+			if (Dvc != null) {
+				if(Dvc.NavigationItem.RightBarButtonItem != doneButton)
+					oldRightBtn = Dvc.NavigationItem.RightBarButtonItem;
+				if(doneButton == null)
+					doneButton = new UIBarButtonItem("Done",UIBarButtonItemStyle.Bordered, delegate{
+						ComboBox.HidePicker();	
+						Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
+					});
+				Dvc.NavigationItem.RightBarButtonItem = doneButton;
+			}
+			
+			
+			// wire up ability to hide picker when other elements are selected.
 			if (!wiredStarted) {
 				foreach(var sect in (root as RootElement)) {
 					foreach(var e in sect.Elements) {
 						var ee = e as EntryElement;
-						if (ee != null) {
+						if (ee != null && ee != this) {
 							// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable hiding picker when other element is selected:
 							// https://github.com/crdeutsch/MonoTouch.Dialog
 							//((EntryElement)e).EntryStarted += delegate {
@@ -132,14 +144,10 @@ namespace MonoTouch.Dialog.PickerElement
 			
 			
 		}
-		public override void Deselected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
-		{
-			Dvc = dvc;
-			base.Deselected (dvc, tableView, path);
+		
+		public void HidePicker() {
 			ComboBox.HidePicker();
 		}
-		
-		
 		
 		// 
 		// Computes the X position for the entry by aligning all the entries in the Section
@@ -173,7 +181,7 @@ namespace MonoTouch.Dialog.PickerElement
 			//cell.Accessory = UITableViewCellAccessory.None;
 			//cell.TextLabel.TextAlignment = Alignment;
 			
-			if (entry == null){
+			if (entry == null){												
 				SizeF size = ComputeEntryPosition (tv, cell);
 				var _entry = new UILabel (new RectangleF (size.Width, (cell.ContentView.Bounds.Height-size.Height)/2-1, 320-size.Width - 27, size.Height)){
 					Tag = 1,
@@ -186,18 +194,14 @@ namespace MonoTouch.Dialog.PickerElement
 				//entry.AutoresizingMask = UIViewAutoresizing.FlexibleWidth |
 				//	UIViewAutoresizing.FlexibleLeftMargin;
 				
-			}
+			}			
 			
 			cell.TextLabel.Text = Caption;
 			cell.ContentView.AddSubview (entry);						
 			return cell;
 		}
 		
-		
-		public void HidePicker() {
-			ComboBox.HidePicker();
-		}
-		
+				
 		public void RefreshValue() {
 			if (entry != null) {
 				entry.Text = Value;
@@ -218,20 +222,13 @@ namespace MonoTouch.Dialog.PickerElement
 			foreach(var sect in root) {
 				foreach(var e in sect.Elements) {
 					var ee = e as EntryElement;
-					if (ee != null) {
+					if (ee != null && ee != this) {
 						ee.ResignFirstResponder(false);
-					}
-					var dte = e as DateTimeElement2;
-					if (dte != null) {
-						dte.HidePicker();
-					}
-					var pe = e as PickerElement;
-					if (pe != null && pe != this) {
-						pe.HidePicker();
 					}
 				}
 			}
 		}
+				
 	}
 	
 	

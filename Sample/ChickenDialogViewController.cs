@@ -33,7 +33,7 @@ namespace Sample
 			chickenName = new EntryElement("Name", null, "");
 			chickenName.Value = "Big Bird";
 			
-			rating = new PickerElement("Rating", items.ToArray(), null) {
+			rating = new PickerElement("Rating", items.ToArray(), null, this) {
 				Width = 40f,
 				Alignment = UITextAlignment.Left
 			};			
@@ -41,7 +41,7 @@ namespace Sample
 			rating.Value = "5";
 			rating.SetSelectedValue(rating.Value);
 			
-			date = new DateTimeElement2("Date", DateTime.Now) {
+			date = new DateTimeElement2("Date", DateTime.Now, this) {
 				Alignment = UITextAlignment.Left,
 				Mode = UIDatePickerMode.Date
 			};

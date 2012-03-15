@@ -44,9 +44,10 @@ namespace MonoTouch.Dialog.PickerElement
 		protected internal NSDateFormatter fmt = new NSDateFormatter () {
 			DateStyle = NSDateFormatterStyle.Short
 		};
-		
-		public DateTimeElement2 (string caption, DateTime date) : base (caption, null, null)
+				
+		public DateTimeElement2 (string caption, DateTime date, DialogViewController dvc) : base (caption, null, null)
 		{			
+			this.Dvc = dvc;
 			DateValue = date;
 			
 			// create picker elements
@@ -76,16 +77,7 @@ namespace MonoTouch.Dialog.PickerElement
 		
 		public bool ShouldDeselect = true;
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
-		{
-			Element root = Parent;
-			while (root.Parent != null) {
-				root = root.Parent;
-			}
-			
-			// get rid of keyboard if another element triggered it.
-			ResignFirstResponders((RootElement)root);
-			
-			Dvc = dvc;
+		{				
 			ViewForPicker = ViewForPicker ?? tableView.Superview;
 			
 			if (Tapped != null)
@@ -94,33 +86,6 @@ namespace MonoTouch.Dialog.PickerElement
 				tableView.DeselectRow (path, true);
 						
 			ShowPicker();			
-			
-			//ComboBox.ShowPicker();
-			if(dvc.NavigationItem.RightBarButtonItem != doneButton)
-				oldRightBtn = dvc.NavigationItem.RightBarButtonItem;
-			if(doneButton == null)
-				doneButton = new UIBarButtonItem("Done",UIBarButtonItemStyle.Bordered, delegate{
-					HidePicker();						
-				});
-			dvc.NavigationItem.RightBarButtonItem = doneButton;
-			if (!wiredStarted) {
-				foreach(var sect in (root as RootElement)) {
-					foreach(var e in sect.Elements) {
-						var ee = e as EntryElement;
-						if (ee != null) {
-							// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable hiding picker when other element is selected:
-							// https://github.com/crdeutsch/MonoTouch.Dialog
-							//((EntryElement)e).EntryStarted += delegate {
-							//	HidePicker();
-							//};
-							ee.ResignFirstResponder(false);
-						}
-					}
-				}
-				wiredStarted = true;
-			}
-			
-			
 		}
 		
 		public void LayoutSubviews ()
@@ -135,9 +100,87 @@ namespace MonoTouch.Dialog.PickerElement
 		
 		public override void Deselected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
-			Dvc = dvc;
 			base.Deselected (dvc, tableView, path);
-			///ComboBox.HidePicker();
+			HidePicker();
+		}
+		
+		public void ShowPicker() {
+			// get rid of keyboard if another element triggered it.
+			Element root = Parent;
+			while (root.Parent != null) {
+				root = root.Parent;
+			}	
+			ResignFirstResponders((RootElement)root);
+			
+			
+			if(PickerShown != null)
+				PickerShown(this,null);
+			
+			LayoutSubviews ();
+			datePicker.BringSubviewToFront(closeBtn);
+			var parentView = ViewForPicker;
+			var parentFrame = parentView.Frame;
+			
+			datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentFrame.Height));
+			
+			UIView.BeginAnimations("slidePickerIn");			
+			UIView.SetAnimationDuration(0.3);
+			UIView.SetAnimationDelegate(parentView);
+			UIView.SetAnimationDidStopSelector (new Selector ("fadeInDidFinish"));
+			//parentView.AddSubview(closeView);			
+			parentView.AddSubview(datePicker);
+						
+			datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentFrame.Height - datePicker.Frame.Height));
+			UIView.CommitAnimations();			
+			
+			//ComboBox.ShowPicker();
+			if(Dvc.NavigationItem.RightBarButtonItem != doneButton)
+				oldRightBtn = Dvc.NavigationItem.RightBarButtonItem;
+			if(doneButton == null)
+				doneButton = new UIBarButtonItem("Done",UIBarButtonItemStyle.Bordered, delegate{
+					HidePicker();						
+				});
+			Dvc.NavigationItem.RightBarButtonItem = doneButton;
+			if (!wiredStarted) {
+				foreach(var sect in (root as RootElement)) {
+					foreach(var e in sect.Elements) {
+						var ee = e as EntryElement;
+						if (ee != null && ee != this) {
+							// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable hiding picker when other element is selected:
+							// https://github.com/crdeutsch/MonoTouch.Dialog
+							//((EntryElement)e).EntryStarted += delegate {
+							//	HidePicker();
+							//};
+							ee.ResignFirstResponder(false);
+						}
+					}
+				}
+				wiredStarted = true;
+			}
+		}
+		
+		public void HidePicker() {
+			if(PickerClosed!=null)
+				PickerClosed(this,null);
+			
+			var parentView = ViewForPicker;
+			
+			if (parentView != null) {
+				var parentH = parentView.Frame.Height;
+				
+				UIView.BeginAnimations("slidePickerOut");			
+				UIView.SetAnimationDuration(0.3);
+				UIView.SetAnimationDelegate(parentView);			
+				UIView.SetAnimationDidStopSelector (new Selector ("fadeOutDidFinish"));
+				datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentH));
+				UIView.CommitAnimations();
+				
+				//datePicker.RemoveFromSuperview();
+				
+				if (Dvc != null) {
+					Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
+				}
+			}
 		}
 		
 		
@@ -195,52 +238,6 @@ namespace MonoTouch.Dialog.PickerElement
 			return cell;
 		}
 		
-		public void ShowPicker()
-		{
-			if(PickerShown != null)
-				PickerShown(this,null);
-			
-			LayoutSubviews ();
-			datePicker.BringSubviewToFront(closeBtn);
-			var parentView = ViewForPicker;
-			var parentFrame = parentView.Frame;
-			
-			datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentFrame.Height));
-			
-			UIView.BeginAnimations("slidePickerIn");			
-			UIView.SetAnimationDuration(0.3);
-			UIView.SetAnimationDelegate(parentView);
-			UIView.SetAnimationDidStopSelector (new Selector ("fadeInDidFinish"));
-			//parentView.AddSubview(closeView);			
-			parentView.AddSubview(datePicker);
-						
-			datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentFrame.Height - datePicker.Frame.Height));
-			UIView.CommitAnimations();			
-		}
-		
-		public void HidePicker() {
-			if(PickerClosed!=null)
-				PickerClosed(this,null);
-			
-			var parentView = ViewForPicker;
-			
-			if (parentView != null) {
-				var parentH = parentView.Frame.Height;
-				
-				UIView.BeginAnimations("slidePickerOut");			
-				UIView.SetAnimationDuration(0.3);
-				UIView.SetAnimationDelegate(parentView);			
-				UIView.SetAnimationDidStopSelector (new Selector ("fadeOutDidFinish"));
-				datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentH));
-				UIView.CommitAnimations();
-				
-				//datePicker.RemoveFromSuperview();
-				
-				if (Dvc != null) {
-					Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
-				}
-			}
-		}
 		
 		public void RefreshValue() {
 			if (entry != null) {
@@ -262,44 +259,12 @@ namespace MonoTouch.Dialog.PickerElement
 			foreach(var sect in root) {
 				foreach(var e in sect.Elements) {
 					var ee = e as EntryElement;
-					if (ee != null) {
+					if (ee != null && ee != this) {
 						ee.ResignFirstResponder(false);
-					}
-					var pe = e as PickerElement;
-					if (pe != null) {
-						pe.HidePicker();
-					}
-					var dte = e as DateTimeElement2;
-					if (dte != null && dte != this) {
-						dte.HidePicker();
 					}
 				}
 			}
 		}
-		
-		
-		/*
-		public override UITableViewCell GetCell (UITableView tv)
-		{
-			Value = FormatDate (DateValue);
-			var cell = base.GetCell (tv);
-			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
-			return cell;
-		}
-		
-		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
-		{
-			var vc = new MyViewController (this) {
-				Autorotate = dvc.Autorotate
-			};
-			datePicker = CreatePicker ();
-			datePicker.Frame = PickerFrameWithSize (datePicker.SizeThatFits (SizeF.Empty));
-			                            
-			vc.View.BackgroundColor = UIColor.Black;
-			vc.View.AddSubview (datePicker);
-			dvc.ActivateController (vc);
-		}
- 		*/
 		
 		protected override void Dispose (bool disposing)
 		{
@@ -365,8 +330,6 @@ namespace MonoTouch.Dialog.PickerElement
 			
 			return new RectangleF (fX, fY, size.Width, size.Height);
 		}                                                                                                                                    
-		
-		
 		
 	}
 }
