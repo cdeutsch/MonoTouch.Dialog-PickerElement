@@ -41,7 +41,7 @@ namespace MonoTouch.Dialog.PickerElement
 			this.ComboBox.TextAlignment = UITextAlignment.Right;
 			this.ComboBox.BorderStyle = UITextBorderStyle.None;
 			this.ComboBox.PickerClosed += delegate {
-				if (Dvc != null) {
+				if (Dvc != null && oldRightBtn != null) {
 					Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
 				}
 			};
@@ -183,7 +183,7 @@ namespace MonoTouch.Dialog.PickerElement
 			
 			if (entry == null){												
 				SizeF size = ComputeEntryPosition (tv, cell);
-				var _entry = new UILabel (new RectangleF (size.Width, (cell.ContentView.Bounds.Height-size.Height)/2-1, 320-size.Width - 27, size.Height)){
+				var _entry = new UILabel (new RectangleF (size.Width-8, (cell.ContentView.Bounds.Height-size.Height)/2-1, 320-size.Width - 27, size.Height)){
 					Tag = 1,
 					//Placeholder = placeholder ?? "",
 					Text = val,
