@@ -329,8 +329,42 @@ namespace MonoTouch.Dialog.PickerElement
 			}
 			
 			return new RectangleF (fX, fY, size.Width, size.Height);
-		}                                                                                                                                    
+		}  
 		
+		
+		// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable support for "next" button being clicked.
+		// https://github.com/crdeutsch/MonoTouch.Dialog
+		/*
+		bool becomeResponder;		
+		/// <summary>
+		/// Makes this cell the first responder (get the focus)
+		/// </summary>
+		/// <param name="animated">
+		/// Whether scrolling to the location of this cell should be animated
+		/// </param>
+		public override void BecomeFirstResponder (bool animated)
+		{
+			becomeResponder = true;
+			var tv = GetContainerTableView ();
+			if (tv == null)
+				return;
+			tv.ScrollToRow (IndexPath, UITableViewScrollPosition.Middle, animated);
+			if (entry != null){
+				ShowPicker();
+				becomeResponder = false;
+			}
+		}
+		public override void ResignFirstResponder (bool animated)
+		{
+			becomeResponder = false;
+			var tv = GetContainerTableView ();
+			if (tv == null)
+				return;
+			tv.ScrollToRow (IndexPath, UITableViewScrollPosition.Middle, animated);
+			if (entry != null)
+				HidePicker();
+		}
+		*/
 	}
 }
 
