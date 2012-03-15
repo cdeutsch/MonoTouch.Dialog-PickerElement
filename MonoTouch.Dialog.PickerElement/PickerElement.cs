@@ -41,7 +41,7 @@ namespace MonoTouch.Dialog.PickerElement
 			this.ComboBox.TextAlignment = UITextAlignment.Right;
 			this.ComboBox.BorderStyle = UITextBorderStyle.None;
 			this.ComboBox.PickerClosed += delegate {
-				if (Dvc != null && oldRightBtn != null) {
+				if (Dvc != null) {
 					Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
 				}
 			};
@@ -110,20 +110,7 @@ namespace MonoTouch.Dialog.PickerElement
 				root = root.Parent;
 			}					
 			ResignFirstResponders((RootElement)root);
-			
-			ComboBox.ShowPicker();
-			if (Dvc != null) {
-				if(Dvc.NavigationItem.RightBarButtonItem != doneButton)
-					oldRightBtn = Dvc.NavigationItem.RightBarButtonItem;
-				if(doneButton == null)
-					doneButton = new UIBarButtonItem("Done",UIBarButtonItemStyle.Bordered, delegate{
-						ComboBox.HidePicker();	
-						Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
-					});
-				Dvc.NavigationItem.RightBarButtonItem = doneButton;
-			}
-			
-			
+						
 			// wire up ability to hide picker when other elements are selected.
 			if (!wiredStarted) {
 				foreach(var sect in (root as RootElement)) {
@@ -142,6 +129,17 @@ namespace MonoTouch.Dialog.PickerElement
 				wiredStarted = true;
 			}
 			
+			ComboBox.ShowPicker();
+			if (Dvc != null) {
+				if(Dvc.NavigationItem.RightBarButtonItem != doneButton)
+					oldRightBtn = Dvc.NavigationItem.RightBarButtonItem;
+				if(doneButton == null)
+					doneButton = new UIBarButtonItem("Done",UIBarButtonItemStyle.Bordered, delegate{
+						ComboBox.HidePicker();	
+						Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
+					});
+				Dvc.NavigationItem.RightBarButtonItem = doneButton;
+			}
 			
 		}
 		

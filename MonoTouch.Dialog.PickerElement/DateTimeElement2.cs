@@ -112,28 +112,6 @@ namespace MonoTouch.Dialog.PickerElement
 			}	
 			ResignFirstResponders((RootElement)root);
 			
-			
-			if(PickerShown != null)
-				PickerShown(this,null);
-			
-			LayoutSubviews ();
-			datePicker.BringSubviewToFront(closeBtn);
-			var parentView = ViewForPicker;
-			var parentFrame = parentView.Frame;
-			
-			datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentFrame.Height));
-			
-			UIView.BeginAnimations("slidePickerIn");			
-			UIView.SetAnimationDuration(0.3);
-			UIView.SetAnimationDelegate(parentView);
-			UIView.SetAnimationDidStopSelector (new Selector ("fadeInDidFinish"));
-			//parentView.AddSubview(closeView);			
-			parentView.AddSubview(datePicker);
-						
-			datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentFrame.Height - datePicker.Frame.Height));
-			UIView.CommitAnimations();			
-			
-			//ComboBox.ShowPicker();
 			if(Dvc.NavigationItem.RightBarButtonItem != doneButton)
 				oldRightBtn = Dvc.NavigationItem.RightBarButtonItem;
 			if(doneButton == null)
@@ -157,6 +135,27 @@ namespace MonoTouch.Dialog.PickerElement
 				}
 				wiredStarted = true;
 			}
+			
+			if(PickerShown != null)
+				PickerShown(this,null);
+			
+			LayoutSubviews ();
+			datePicker.BringSubviewToFront(closeBtn);
+			var parentView = ViewForPicker;
+			var parentFrame = parentView.Frame;
+			
+			datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentFrame.Height));
+					
+			UIView.BeginAnimations("slidePickerIn");			
+			UIView.SetAnimationDuration(0.3);
+			UIView.SetAnimationDelegate(parentView);
+			UIView.SetAnimationDidStopSelector (new Selector ("fadeInDidFinish"));
+			//parentView.AddSubview(closeView);			
+			parentView.AddSubview(datePicker);
+						
+			datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentFrame.Height - datePicker.Frame.Height));
+			UIView.CommitAnimations();						
+			
 		}
 		
 		public void HidePicker() {
