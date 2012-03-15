@@ -20,12 +20,19 @@ using MonoTouch.Foundation;
 using ClanceysLib;
 namespace MonoTouch.Dialog.PickerElement
 {
-	public class PickerElement: ReadOnlyStringElement
+	public class PickerElement: EntryElement
 	{
-		NSString key =new NSString( "UIComboBoxElement");
 		protected UIComboBox ComboBox;
+				
+		static NSString skey = new NSString ("PickerElement");
+		static NSString skeyvalue = new NSString ("PickerElementValue");
+		public UITextAlignment Alignment = UITextAlignment.Left;
+		public UILabel entry;
+		static UIFont font = UIFont.BoldSystemFontOfSize (17);
 		
-		public PickerElement (string caption, object[] Items , string DisplayMember) : base (caption) 
+		public event NSAction Tapped;
+		
+		public PickerElement (string caption, object[] Items , string DisplayMember) : base (caption, null, null) 
 		{
 			this.ComboBox = new UIComboBox(RectangleF.Empty);
 			this.ComboBox.Items = Items;
@@ -39,9 +46,10 @@ namespace MonoTouch.Dialog.PickerElement
 			};
 			this.ComboBox.ValueChanged += delegate {
 				Value = ComboBox.Text;
+				RefreshValue();
 			};
 			Value = ComboBox.Text;
-			this.TextAlignment = UITextAlignment.Center;
+			this.Alignment = UITextAlignment.Center;
 		}
 		
 		public void SetSelectedValue(string Value) {
@@ -77,6 +85,8 @@ namespace MonoTouch.Dialog.PickerElement
 		private UIBarButtonItem oldRightBtn;
 		private UIBarButtonItem doneButton;
 		private bool wiredStarted = false;
+		
+		public bool ShouldDeselect = true;		
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
 			Element root = Parent;
@@ -88,7 +98,12 @@ namespace MonoTouch.Dialog.PickerElement
 			ResignFirstResponders((RootElement)root);
 			
 			Dvc = dvc;
-			base.Selected (dvc, tableView, path);
+			
+			if (Tapped != null)
+				Tapped ();
+			if(ShouldDeselect)
+				tableView.DeselectRow (path, true);
+			
 			ComboBox.ShowPicker();
 			if(dvc.NavigationItem.RightBarButtonItem != doneButton)
 				oldRightBtn = dvc.NavigationItem.RightBarButtonItem;
@@ -124,15 +139,79 @@ namespace MonoTouch.Dialog.PickerElement
 			ComboBox.HidePicker();
 		}
 		
+		
+		
+		// 
+		// Computes the X position for the entry by aligning all the entries in the Section
+		//
+		SizeF ComputeEntryPosition (UITableView tv, UITableViewCell cell)
+		{
+			Section s = Parent as Section;
+			SizeF max = new SizeF (-1, -1);
+			foreach (var e in s.Elements){
+				var ee = e as EntryElement;
+				if (ee != null) {
+					var size = tv.StringSize (ee.Caption, font);
+					if (size.Width > max.Width)
+						max = size;				
+				}
+			}
+			s.EntryAlignment = new SizeF (25 + Math.Min (max.Width, 160), max.Height);
+			return s.EntryAlignment;
+		}
+		
 		public override UITableViewCell GetCell (UITableView tv)
 		{
-			//ComboBox.ViewForPicker = dvc.View.Superview;
 			ComboBox.ViewForPicker = tv.Superview;
-			return base.GetCell (tv);
+			var cell = tv.DequeueReusableCell (Value == null ? skey : skeyvalue);
+			if (cell == null){
+				cell = new UITableViewCell (UITableViewCellStyle.Value1, skey);
+				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Blue : UITableViewCellSelectionStyle.None;
+			} else 
+				RemoveTag (cell, 1);
+			
+			//cell.Accessory = UITableViewCellAccessory.None;
+			//cell.TextLabel.TextAlignment = Alignment;
+			
+			if (entry == null){
+				SizeF size = ComputeEntryPosition (tv, cell);
+				var _entry = new UILabel (new RectangleF (size.Width, (cell.ContentView.Bounds.Height-size.Height)/2-1, 320-size.Width - 27, size.Height)){
+					Tag = 1,
+					//Placeholder = placeholder ?? "",
+					Text = val,
+					TextAlignment = Alignment,
+				};
+				_entry.Text = Value ?? "";	
+				entry = _entry;
+				//entry.AutoresizingMask = UIViewAutoresizing.FlexibleWidth |
+				//	UIViewAutoresizing.FlexibleLeftMargin;
+				
+			}
+			
+			cell.TextLabel.Text = Caption;
+			cell.ContentView.AddSubview (entry);						
+			return cell;
 		}
+		
 		
 		public void HidePicker() {
 			ComboBox.HidePicker();
+		}
+		
+		public void RefreshValue() {
+			if (entry != null) {
+				entry.Text = Value;
+			}
+		}
+		
+		public override string Summary ()
+		{
+			return Caption;
+		}
+		
+		public override bool Matches (string text)
+		{
+			return (Value != null ? Value.IndexOf (text, StringComparison.CurrentCultureIgnoreCase) != -1: false) || base.Matches (text);
 		}
 		
 		private void ResignFirstResponders(RootElement root) {

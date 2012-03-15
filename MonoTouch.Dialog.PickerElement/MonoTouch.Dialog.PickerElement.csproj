@@ -48,7 +48,6 @@
     <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\Util.cs" />
     <Compile Include="PickerElement.cs" />
-    <Compile Include="ReadOnlyStringElement.cs" />
     <Compile Include="DateTimeElement2.cs" />
   </ItemGroup>
   <ItemGroup>

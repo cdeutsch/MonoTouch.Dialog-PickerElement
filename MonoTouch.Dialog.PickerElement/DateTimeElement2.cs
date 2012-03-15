@@ -8,7 +8,16 @@ using MonoTouch.ObjCRuntime;
 
 namespace MonoTouch.Dialog.PickerElement
 {
-	public class DateTimeElement2 : ReadOnlyStringElement {
+	public class DateTimeElement2 : EntryElement {
+		
+		static NSString skey = new NSString ("PickerElement");
+		static NSString skeyvalue = new NSString ("PickerElementValue");
+		public UITextAlignment Alignment = UITextAlignment.Left;
+		public UILabel entry;
+		static UIFont font = UIFont.BoldSystemFontOfSize (17);
+		
+		public event NSAction Tapped;
+		
 		public DateTime DateValue;
 		public UIDatePickerMode Mode { 
 			get {
@@ -36,7 +45,7 @@ namespace MonoTouch.Dialog.PickerElement
 			DateStyle = NSDateFormatterStyle.Short
 		};
 		
-		public DateTimeElement2 (string caption, DateTime date) : base (caption)
+		public DateTimeElement2 (string caption, DateTime date) : base (caption, null, null)
 		{			
 			DateValue = date;
 			
@@ -46,6 +55,7 @@ namespace MonoTouch.Dialog.PickerElement
 			datePicker.ValueChanged += delegate {
 				DateValue = datePicker.Date;				
 				Value = FormatDate(DateValue);
+				RefreshValue();
 				
 				if (DateSelected != null)
 					DateSelected (this);								
@@ -60,9 +70,11 @@ namespace MonoTouch.Dialog.PickerElement
 			datePicker.AddSubview(closeBtn);			
 						
 			Value = FormatDate (date);			
+			
+			this.Alignment = UITextAlignment.Left;
 		}	
 		
-		
+		public bool ShouldDeselect = true;
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
 			Element root = Parent;
@@ -75,8 +87,12 @@ namespace MonoTouch.Dialog.PickerElement
 			
 			Dvc = dvc;
 			ViewForPicker = ViewForPicker ?? tableView.Superview;
-			base.Selected (dvc, tableView, path);
 			
+			if (Tapped != null)
+				Tapped ();
+			if(ShouldDeselect)
+				tableView.DeselectRow (path, true);
+						
 			ShowPicker();			
 			
 			//ComboBox.ShowPicker();
@@ -124,12 +140,59 @@ namespace MonoTouch.Dialog.PickerElement
 			///ComboBox.HidePicker();
 		}
 		
+		
+		// 
+		// Computes the X position for the entry by aligning all the entries in the Section
+		//
+		SizeF ComputeEntryPosition (UITableView tv, UITableViewCell cell)
+		{
+			Section s = Parent as Section;
+			SizeF max = new SizeF (-1, -1);
+			foreach (var e in s.Elements){
+				var ee = e as EntryElement;
+				if (ee != null) {
+					var size = tv.StringSize (ee.Caption, font);
+					if (size.Width > max.Width)
+						max = size;				
+				}
+			}
+			s.EntryAlignment = new SizeF (25 + Math.Min (max.Width, 160), max.Height);
+			return s.EntryAlignment;
+		}
+
+		
 		public override UITableViewCell GetCell (UITableView tv)
 		{
 			Value = FormatDate (DateValue);
-			var cell = base.GetCell (tv);
-			//cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
-			return cell;				
+			
+			var cell = tv.DequeueReusableCell (Value == null ? skey : skeyvalue);
+			if (cell == null){
+				cell = new UITableViewCell (UITableViewCellStyle.Value1, skey);
+				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Blue : UITableViewCellSelectionStyle.None;
+			} else 
+				RemoveTag (cell, 1);
+			
+			//cell.Accessory = UITableViewCellAccessory.None;
+			//cell.TextLabel.TextAlignment = Alignment;
+			
+			if (entry == null){
+				SizeF size = ComputeEntryPosition (tv, cell);
+				var _entry = new UILabel (new RectangleF (size.Width, (cell.ContentView.Bounds.Height-size.Height)/2-1, 320-size.Width - 27, size.Height)){
+					Tag = 1,
+					//Placeholder = placeholder ?? "",
+					Text = val,
+					TextAlignment = Alignment,
+				};
+				_entry.Text = Value ?? "";	
+				entry = _entry;
+				//entry.AutoresizingMask = UIViewAutoresizing.FlexibleWidth |
+				//	UIViewAutoresizing.FlexibleLeftMargin;
+				
+			}
+			
+			cell.TextLabel.Text = Caption;
+			cell.ContentView.AddSubview (entry);						
+			return cell;
 		}
 		
 		public void ShowPicker()
@@ -177,6 +240,22 @@ namespace MonoTouch.Dialog.PickerElement
 					Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
 				}
 			}
+		}
+		
+		public void RefreshValue() {
+			if (entry != null) {
+				entry.Text = Value;
+			}
+		}
+		
+		public override string Summary ()
+		{
+			return Caption;
+		}
+		
+		public override bool Matches (string text)
+		{
+			return (Value != null ? Value.IndexOf (text, StringComparison.CurrentCultureIgnoreCase) != -1: false) || base.Matches (text);
 		}
 		
 		private void ResignFirstResponders(RootElement root) {

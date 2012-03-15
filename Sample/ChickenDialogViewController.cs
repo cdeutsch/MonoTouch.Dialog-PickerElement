@@ -31,17 +31,18 @@ namespace Sample
 				items.Add (i);
 			}
 			chickenName = new EntryElement("Name", null, "");
+			chickenName.Value = "Big Bird";
 			
 			rating = new PickerElement("Rating", items.ToArray(), null) {
 				Width = 40f,
-				TextAlignment = UITextAlignment.Left
+				Alignment = UITextAlignment.Left
 			};			
 			// set initial rating.
 			rating.Value = "5";
 			rating.SetSelectedValue(rating.Value);
 			
 			date = new DateTimeElement2("Date", DateTime.Now) {
-				TextAlignment = UITextAlignment.Left,
+				Alignment = UITextAlignment.Left,
 				Mode = UIDatePickerMode.Date
 			};
 			
