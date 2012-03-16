@@ -28,9 +28,18 @@ namespace MonoTouch.Dialog.PickerElement
 		static NSString skeyvalue = new NSString ("PickerElementValue");
 		public UITextAlignment Alignment = UITextAlignment.Left;
 		public UILabel entry;
+		public UIColor SelectedBackgroundColor = UIColor.FromRGBA(0.02f, 0.55f, 0.96f, 1f);
+		public UIColor SelectedTextColor = UIColor.White;
+		private UITableViewCell cell = null;
 		static UIFont font = UIFont.BoldSystemFontOfSize (17);
 		
 		public event NSAction Tapped;
+		
+		float modifiedHeightOffset = 0;
+		UIColor originalCellBackgroundColor = null;
+		UIColor originalEntryBackgroundColor = null;
+		UIColor originalCellTextColor = null;
+		UIColor originalEntryTextColor = null;
 		
 		public PickerElement (string caption, object[] Items , string DisplayMember, DialogViewController dvc) : base (caption, null, null) 
 		{
@@ -44,10 +53,20 @@ namespace MonoTouch.Dialog.PickerElement
 				if (Dvc != null) {
 					Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
 				}
+				RestoreTableView();
 			};
 			this.ComboBox.ValueChanged += delegate {
 				Value = ComboBox.Text;
 				RefreshValue();
+			};
+			this.ComboBox.PickerFadeInDidFinish += delegate {
+				if (modifiedHeightOffset == 0f) {
+					// adjust size.
+					var ff = Dvc.TableView.Frame;
+					modifiedHeightOffset = 200f;
+					Dvc.TableView.Frame = new RectangleF(ff.X, ff.Y, ff.Width, ff.Height - modifiedHeightOffset);
+					Dvc.TableView.ScrollToRow (IndexPath, UITableViewScrollPosition.Middle, true);
+				}
 			};
 			Value = ComboBox.Text;
 			this.Alignment = UITextAlignment.Center;
@@ -147,10 +166,49 @@ namespace MonoTouch.Dialog.PickerElement
 				Dvc.NavigationItem.RightBarButtonItem = doneButton;
 			}
 			
+			if (originalCellBackgroundColor == null) {
+				originalCellBackgroundColor = cell.BackgroundColor;
+				cell.BackgroundColor = SelectedBackgroundColor;
+				
+				originalEntryBackgroundColor = entry.BackgroundColor;
+				entry.BackgroundColor = SelectedBackgroundColor;
+				
+				originalCellTextColor = cell.TextLabel.TextColor;
+				cell.TextLabel.TextColor = SelectedTextColor;
+				
+				originalEntryTextColor = entry.TextColor;
+				entry.TextColor = SelectedTextColor;
+			}
 		}
 		
 		public void HidePicker() {
 			ComboBox.HidePicker();
+			
+			RestoreTableView();
+		}
+		
+		private void RestoreTableView() {
+			// remove bg color
+			if (originalCellBackgroundColor != null) {
+				cell.BackgroundColor = originalCellBackgroundColor;
+				originalCellBackgroundColor = null;
+			
+				entry.BackgroundColor = originalEntryBackgroundColor;
+				originalEntryBackgroundColor = null;
+				
+				cell.TextLabel.TextColor = originalCellTextColor;
+				originalCellTextColor = null;
+			
+				entry.TextColor = originalEntryTextColor;
+				originalEntryTextColor = null;
+			}
+			
+			if (modifiedHeightOffset > 0) {
+				// adjust size.
+				var ff = Dvc.TableView.Frame;
+				Dvc.TableView.Frame = new RectangleF(ff.X, ff.Y, ff.Width, ff.Height + modifiedHeightOffset);
+				modifiedHeightOffset = 0f;
+			}
 		}
 		
 		// 
@@ -175,13 +233,19 @@ namespace MonoTouch.Dialog.PickerElement
 		public override UITableViewCell GetCell (UITableView tv)
 		{
 			ComboBox.ViewForPicker = tv.Superview;
-			var cell = tv.DequeueReusableCell (Value == null ? skey : skeyvalue);
+			cell = tv.DequeueReusableCell (Value == null ? skey : skeyvalue);
 			if (cell == null){
 				cell = new UITableViewCell (UITableViewCellStyle.Value1, skey);
 				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Blue : UITableViewCellSelectionStyle.None;
 			} else 
 				RemoveTag (cell, 1);
 			
+			
+			if (originalEntryBackgroundColor != null) {
+				// modify background color to stay consistant.
+				cell.BackgroundColor = SelectedBackgroundColor;
+				cell.TextLabel.TextColor = SelectedTextColor;
+			}
 			//cell.Accessory = UITableViewCellAccessory.None;
 			//cell.TextLabel.TextAlignment = Alignment;
 			

@@ -26,6 +26,10 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## History ##
 
+### 3/16/2012 ###
+
+* Added feature that highlights the row the picker is being shown for and also scrolls the row into view rather then potentially covering it up.
+
 ### 3/14/2012 ###
 
 * Created DateTimeElement2 that creates a UIDatePicker on the same view just like the PickerElement, instead of pushing a new view like the regular MonoTouch.Dialog DateTimeElement.

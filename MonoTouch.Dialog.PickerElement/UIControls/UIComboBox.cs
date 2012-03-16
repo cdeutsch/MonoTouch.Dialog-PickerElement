@@ -33,6 +33,7 @@ namespace ClanceysLib
 		public event EventHandler ValueChanged;
 		public event EventHandler PickerClosed;
 		public event EventHandler PickerShown;
+		public event EventHandler PickerFadeInDidFinish;
 		public UIComboBox(RectangleF rect) : base (rect)
 		{
 			this.BorderStyle = UITextBorderStyle.RoundedRect;
@@ -179,6 +180,10 @@ namespace ClanceysLib
 		{
 			pickerView.BecomeFirstResponder();
 			pickerView.BringSubviewToFront(closeBtn);
+			
+			if (PickerFadeInDidFinish != null) {
+				PickerFadeInDidFinish(this, null);
+			}
 		}
 		
 	}
