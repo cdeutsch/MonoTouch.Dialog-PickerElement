@@ -1,6 +1,6 @@
 # MonoTouch.Dialog PickerElement #
 
-This is a UIPicker for MonoTouch.Dialog
+This is a generic UIPicker and a DateTime Picker for MonoTouch.Dialog. 
 
 It's heavily based on ClanceyLib:
 https://github.com/Clancey/ClanceyLib
@@ -19,6 +19,8 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## Differences from Clancey version ##
 
+* Added a DateTime Picker that functions consitantly with the generic Picker. 
+* Highlights the row you are showing the picker for and scrolls it into focus to avoid the picker hiding the row.
 * Updated it to hide the keyboard or picker when selecting different cells to edit.
 * Actually has a sample of how to use it. ;)
 * Independent DisplayMember and ValueMember
