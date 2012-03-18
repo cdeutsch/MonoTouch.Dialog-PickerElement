@@ -28,6 +28,10 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## History ##
 
+### 3/18/2012 ###
+
+* Added flag to control whether done button is show or not.
+
 ### 3/16/2012 ###
 
 * Added feature that highlights the row the picker is being shown for and also scrolls the row into view rather then potentially covering it up.
