@@ -16,8 +16,12 @@ namespace MonoTouch.Dialog.PickerElement
 		public UILabel entry;
 		public UIColor SelectedBackgroundColor = UIColor.FromRGBA(0.02f, 0.55f, 0.96f, 1f);
 		public UIColor SelectedTextColor = UIColor.White;
+		public bool ShowDoneButton = false;
+		
 		private UITableViewCell cell = null;
 		static UIFont font = UIFont.BoldSystemFontOfSize (17);
+		private bool doneButtonVisible = false;
+		private bool pickerVisible = false;
 		
 		public event NSAction Tapped;
 		
@@ -121,13 +125,22 @@ namespace MonoTouch.Dialog.PickerElement
 			}	
 			ResignFirstResponders((RootElement)root);
 			
-			if(Dvc.NavigationItem.RightBarButtonItem != doneButton)
-				oldRightBtn = Dvc.NavigationItem.RightBarButtonItem;
-			if(doneButton == null)
-				doneButton = new UIBarButtonItem("Done",UIBarButtonItemStyle.Bordered, delegate{
-					HidePicker();						
-				});
-			Dvc.NavigationItem.RightBarButtonItem = doneButton;
+			// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable hiding picker when other element is selected:
+			// https://github.com/crdeutsch/MonoTouch.Dialog
+			//if (EntryStarted != null) {
+			//	EntryStarted(this, null);
+			//}
+			
+			if (Dvc != null && ShowDoneButton) {
+				if(Dvc.NavigationItem.RightBarButtonItem != doneButton)
+					oldRightBtn = Dvc.NavigationItem.RightBarButtonItem;
+				if(doneButton == null)
+					doneButton = new UIBarButtonItem("Done",UIBarButtonItemStyle.Bordered, delegate{
+						HidePicker();						
+					});
+				Dvc.NavigationItem.RightBarButtonItem = doneButton;
+				doneButtonVisible = true;
+			}
 			if (!wiredStarted) {
 				foreach(var sect in (root as RootElement)) {
 					foreach(var e in sect.Elements) {
@@ -138,7 +151,6 @@ namespace MonoTouch.Dialog.PickerElement
 							//((EntryElement)e).EntryStarted += delegate {
 							//	HidePicker();
 							//};
-							ee.ResignFirstResponder(false);
 						}
 					}
 				}
@@ -178,6 +190,8 @@ namespace MonoTouch.Dialog.PickerElement
 				originalEntryTextColor = entry.TextColor;
 				entry.TextColor = SelectedTextColor;
 			}
+			
+			pickerVisible = true;
 		}
 		
 		public void HidePicker() {
@@ -198,8 +212,9 @@ namespace MonoTouch.Dialog.PickerElement
 				
 				//datePicker.RemoveFromSuperview();
 				
-				if (Dvc != null) {
-					Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;
+				if (Dvc != null && doneButtonVisible) {
+					Dvc.NavigationItem.RightBarButtonItem = oldRightBtn;					
+					doneButtonVisible = false;
 				}
 				
 				// remove bg color
@@ -217,13 +232,22 @@ namespace MonoTouch.Dialog.PickerElement
 					originalEntryTextColor = null;
 				}
 				
-				if (modifiedHeightOffset > 0) {
+				if (Dvc != null && modifiedHeightOffset > 0) {
 					// adjust size.
 					var ff = Dvc.TableView.Frame;
 					Dvc.TableView.Frame = new RectangleF(ff.X, ff.Y, ff.Width, ff.Height + modifiedHeightOffset);
 					modifiedHeightOffset = 0f;
 				}
 			}
+			
+			// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable hiding picker when other element is selected:
+			// https://github.com/crdeutsch/MonoTouch.Dialog
+			//if (pickerVisible) {
+			//	if (EntryEnded != null) {
+			//		EntryEnded(this, null);
+			//	}
+			//}
+			pickerVisible = false;
 		}
 		
 		
@@ -384,7 +408,7 @@ namespace MonoTouch.Dialog.PickerElement
 		[Export("fadeInDidFinish")]
 		public void FadeInDidFinish ()
 		{
-			if (modifiedHeightOffset == 0f) {
+			if (Dvc != null && modifiedHeightOffset == 0f) {
 				// adjust size.
 				var ff = Dvc.TableView.Frame;
 				modifiedHeightOffset = 200f;
