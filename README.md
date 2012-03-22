@@ -28,6 +28,10 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## History ##
 
+### 3/21/2012 ###
+
+* Improved the ability to control the size of the Value in the table cell versus the caption.
+
 ### 3/18/2012 ###
 
 * Added flag to control whether done button is show or not.

@@ -49,6 +49,7 @@
     <Compile Include="Utilities\Util.cs" />
     <Compile Include="PickerElement.cs" />
     <Compile Include="DateTimeElement2.cs" />
+    <Compile Include="NoOverlapTableViewCell.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\closebox_pressed.png" />

@@ -26,11 +26,13 @@ namespace MonoTouch.Dialog.PickerElement
 				
 		static NSString skey = new NSString ("PickerElement");
 		static NSString skeyvalue = new NSString ("PickerElementValue");
-		public UITextAlignment Alignment = UITextAlignment.Left;
+		public UITextAlignment Alignment = UITextAlignment.Center;
 		public UILabel entry;
 		public UIColor SelectedBackgroundColor = UIColor.FromRGBA(0.02f, 0.55f, 0.96f, 1f);
 		public UIColor SelectedTextColor = UIColor.White;
 		public bool ShowDoneButton = false;
+		public float ValueWidth = 20f;
+		public UIColor ValueTextColor = UIColor.Black;
 		
 		private UITableViewCell cell = null;
 		static UIFont font = UIFont.BoldSystemFontOfSize (17);
@@ -74,7 +76,6 @@ namespace MonoTouch.Dialog.PickerElement
 				}
 			};
 			Value = ComboBox.Text;
-			this.Alignment = UITextAlignment.Center;
 		}
 		
 		public void SetSelectedValue(string Value) {
@@ -257,35 +258,26 @@ namespace MonoTouch.Dialog.PickerElement
 			ComboBox.ViewForPicker = tv.Superview;
 			cell = tv.DequeueReusableCell (Value == null ? skey : skeyvalue);
 			if (cell == null){
-				cell = new UITableViewCell (UITableViewCellStyle.Value1, skey);
+				cell = new NoOverlapTableViewCell (UITableViewCellStyle.Value1, skey, ValueWidth);
 				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Blue : UITableViewCellSelectionStyle.None;
 			} else 
 				RemoveTag (cell, 1);
 			
+			entry = cell.DetailTextLabel;
+			entry.Text = Value ?? "";	
+			entry.Tag = 1;
+			entry.TextAlignment = Alignment;
+			entry.BackgroundColor = UIColor.Clear;
+			entry.TextColor = ValueTextColor;
 			
 			if (originalEntryBackgroundColor != null) {
 				// modify background color to stay consistant.
 				cell.BackgroundColor = SelectedBackgroundColor;
 				cell.TextLabel.TextColor = SelectedTextColor;
+				entry.BackgroundColor = SelectedBackgroundColor;
+				entry.TextColor = SelectedTextColor;
 			}
-			//cell.Accessory = UITableViewCellAccessory.None;
-			//cell.TextLabel.TextAlignment = Alignment;
-			
-			if (entry == null){												
-				SizeF size = ComputeEntryPosition (tv, cell);
-				var _entry = new UILabel (new RectangleF (size.Width-8, (cell.ContentView.Bounds.Height-size.Height)/2-1, 320-size.Width - 27, size.Height)){
-					Tag = 1,
-					//Placeholder = placeholder ?? "",
-					Text = val,
-					TextAlignment = Alignment,
-				};
-				_entry.Text = Value ?? "";	
-				entry = _entry;
-				//entry.AutoresizingMask = UIViewAutoresizing.FlexibleWidth |
-				//	UIViewAutoresizing.FlexibleLeftMargin;
-				
-			}
-			
+
 			cell.TextLabel.Text = Caption;
 			cell.ContentView.AddSubview (entry);						
 			return cell;
