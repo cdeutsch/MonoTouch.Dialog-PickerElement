@@ -39,6 +39,7 @@ namespace MonoTouch.Dialog.PickerElement
 		private bool doneButtonVisible = false;
 		private bool pickerVisible = false;
 		
+		public EventHandler ValueChanged {get;set;}
 		public event NSAction Tapped;
 		
 		float modifiedHeightOffset = 0;
@@ -65,6 +66,9 @@ namespace MonoTouch.Dialog.PickerElement
 			this.ComboBox.ValueChanged += delegate {
 				Value = ComboBox.Text;
 				RefreshValue();
+				if (ValueChanged != null) {
+					ValueChanged(this, null);
+				}
 			};
 			this.ComboBox.PickerFadeInDidFinish += delegate {
 				if (modifiedHeightOffset == 0f) {

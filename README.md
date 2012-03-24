@@ -28,6 +28,10 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## History ##
 
+### 3/23/2012 ###
+
+* Added ValueChanged Event to PickerElement.
+
 ### 3/21/2012 ###
 
 * Improved the ability to control the size of the Value in the table cell versus the caption.
