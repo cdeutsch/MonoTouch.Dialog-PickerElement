@@ -199,8 +199,8 @@ namespace MonoTouch.Dialog.PickerElement
 			pickerVisible = true;
 		}
 		
-		public void HidePicker() {
-			ComboBox.HidePicker();
+		public void HidePicker(bool Animated = true) {
+			ComboBox.HidePicker(Animated);
 			
 			RestoreTableView();
 		}

@@ -129,22 +129,28 @@ namespace ClanceysLib
 			UIView.CommitAnimations();				
 		}
 		bool isHiding;
-		public void HidePicker()
+		public void HidePicker(bool Animated = true)
 		{
+			var parentView = ViewForPicker ?? Superview;
 			if(PickerClosed!=null)
 				PickerClosed(this,null);
-			if(isHiding)
+			if(isHiding || parentView == null)
 				return;
 			isHiding = true;
-			var parentView = ViewForPicker ?? Superview;
+			
 			var parentH = parentView.Frame.Height;
 			
-			UIView.BeginAnimations("slidePickerOut");			
-			UIView.SetAnimationDuration(0.3);
-			UIView.SetAnimationDelegate(this);
-			UIView.SetAnimationDidStopSelector (new Selector ("fadeOutDidFinish"));
-			pickerView.Frame = pickerView.Frame.SetLocation(new PointF(0,parentH));
-			UIView.CommitAnimations();
+			if (Animated) {
+				UIView.BeginAnimations("slidePickerOut");			
+				UIView.SetAnimationDuration(0.3);
+				UIView.SetAnimationDelegate(this);
+				UIView.SetAnimationDidStopSelector (new Selector ("fadeOutDidFinish"));
+				pickerView.Frame = pickerView.Frame.SetLocation(new PointF(0,parentH));
+				UIView.CommitAnimations();
+			}
+			else {
+				parentView.SendSubviewToBack(pickerView);
+			}
 		}
 		
 		public void SetSelectedIndex(int index) {
