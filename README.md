@@ -28,6 +28,10 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## History ##
 
+### 3/25/2012 ###
+
+* Added support for hiding DatePicker without animation. Useful when view is disappearing.
+
 ### 3/23/2012 ###
 
 * Added ValueChanged Event to PickerElement.

@@ -194,7 +194,7 @@ namespace MonoTouch.Dialog.PickerElement
 			pickerVisible = true;
 		}
 		
-		public void HidePicker() {
+		public void HidePicker(bool Animated = true) {
 			if(PickerClosed!=null)
 				PickerClosed(this,null);
 			
@@ -203,13 +203,18 @@ namespace MonoTouch.Dialog.PickerElement
 			if (parentView != null) {
 				var parentH = parentView.Frame.Height;
 				
-				UIView.BeginAnimations("slidePickerOut");			
-				UIView.SetAnimationDuration(0.3);
-				UIView.SetAnimationDelegate(parentView);			
-				UIView.SetAnimationDidStopSelector (new Selector ("fadeOutDidFinish"));
-				datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentH));
-				UIView.CommitAnimations();
-				
+				if (Animated) {
+					UIView.BeginAnimations("slidePickerOut");			
+					UIView.SetAnimationDuration(0.3);
+					UIView.SetAnimationDelegate(parentView);			
+					//UIView.SetAnimationDidStopSelector (new Selector ("fadeOutDidFinish"));	
+					datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentH));
+					UIView.CommitAnimations();
+				}
+				else {
+					parentView.SendSubviewToBack(datePicker);
+					//datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentH));
+				}
 				//datePicker.RemoveFromSuperview();
 				
 				if (Dvc != null && doneButtonVisible) {
@@ -415,6 +420,11 @@ namespace MonoTouch.Dialog.PickerElement
 				Dvc.TableView.Frame = new RectangleF(ff.X, ff.Y, ff.Width, ff.Height - modifiedHeightOffset);
 				Dvc.TableView.ScrollToRow (IndexPath, UITableViewScrollPosition.Middle, true);
 			}
+		}		
+		
+		[Export("fadeOutDidFinish")]
+		public void FadeOutDidFinish ()
+		{	
 		}
 		
 		// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable support for "next" button being clicked.
