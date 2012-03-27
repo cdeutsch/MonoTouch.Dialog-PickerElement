@@ -18,12 +18,15 @@ namespace MonoTouch.Dialog.PickerElement
 			base.LayoutSubviews ();
 			
 			float indicatorWidth = 0;
-			if (this.Accessory != UITableViewCellAccessory.None) {
+			if (this.Accessory == UITableViewCellAccessory.DetailDisclosureButton
+			    || this.Accessory == UITableViewCellAccessory.Checkmark) {
+				indicatorWidth = 26f;
+			}
+			else if (this.Accessory == UITableViewCellAccessory.DisclosureIndicator) {
 				indicatorWidth = 16f;
 			}
 						
 			if (DetailTextLabel != null) {
-				
 				float yOffset = (ContentViewBounds.Height - MaxEntryPosition.Height) / 2 - 1;
 				float adjust = (ContentViewBounds.Width - this.ContentView.Bounds.Width);
 				float width = ContentViewBounds.Width - MaxEntryPosition.Width - indicatorWidth - adjust - 10f;
@@ -31,6 +34,7 @@ namespace MonoTouch.Dialog.PickerElement
 				if (DetailTextLabelWidth.HasValue) {
 					width = DetailTextLabelWidth.Value;
 					x = ContentViewBounds.Width - 30f - indicatorWidth - DetailTextLabelWidth.Value;
+					TextLabel.Frame = new System.Drawing.RectangleF(10f, yOffset, x, MaxEntryPosition.Height);
 				}
 				DetailTextLabel.Frame = new System.Drawing.RectangleF(x, yOffset, width, MaxEntryPosition.Height);
 			}
