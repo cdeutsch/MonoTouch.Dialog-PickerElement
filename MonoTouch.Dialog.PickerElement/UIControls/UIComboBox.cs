@@ -150,6 +150,7 @@ namespace ClanceysLib
 			}
 			else {
 				parentView.SendSubviewToBack(pickerView);
+				isHiding = false;
 			}
 		}
 		
