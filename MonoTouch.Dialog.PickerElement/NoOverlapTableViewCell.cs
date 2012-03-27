@@ -1,14 +1,16 @@
 using System;
 using MonoTouch.UIKit;
+using System.Drawing;
 
 namespace MonoTouch.Dialog.PickerElement
 {
 	public class NoOverlapTableViewCell : UITableViewCell {
 		
-		public float DetailTextLabelWidth = 0;
+		public float? DetailTextLabelWidth = 0;  //this is here because it seems to be god damn impossible to calculate the size of the other elements when they use AutoresizingMask
+		public SizeF MaxEntryPosition;
+		public RectangleF ContentViewBounds;
 		
-		public NoOverlapTableViewCell(UITableViewCellStyle style, string reuseIdentifier, float DetailTextLabelWidth) : base(style, reuseIdentifier) {
-			this.DetailTextLabelWidth = DetailTextLabelWidth;
+		public NoOverlapTableViewCell(UITableViewCellStyle style, string reuseIdentifier) : base(style, reuseIdentifier) {
 		}
 		
 		public override void LayoutSubviews ()
@@ -19,15 +21,21 @@ namespace MonoTouch.Dialog.PickerElement
 			if (this.Accessory != UITableViewCellAccessory.None) {
 				indicatorWidth = 16f;
 			}
-			
-			var curBounds = TextLabel.Bounds;
-			TextLabel.Frame = new System.Drawing.RectangleF(10f, 0, 320f - 40f - indicatorWidth - DetailTextLabelWidth, 43f);
-			
+						
 			if (DetailTextLabel != null) {
-				var curBounds2 = DetailTextLabel.Bounds;
-				DetailTextLabel.Frame = new System.Drawing.RectangleF(320f - 30f - indicatorWidth - DetailTextLabelWidth, 10f, DetailTextLabelWidth, 21f);
+				
+				float yOffset = (ContentViewBounds.Height - MaxEntryPosition.Height) / 2 - 1;
+				float adjust = (ContentViewBounds.Width - this.ContentView.Bounds.Width);
+				float width = ContentViewBounds.Width - MaxEntryPosition.Width - indicatorWidth - adjust - 10f;
+				var x = MaxEntryPosition.Width;
+				if (DetailTextLabelWidth.HasValue) {
+					width = DetailTextLabelWidth.Value;
+					x = ContentViewBounds.Width - 30f - indicatorWidth - DetailTextLabelWidth.Value;
+				}
+				DetailTextLabel.Frame = new System.Drawing.RectangleF(x, yOffset, width, MaxEntryPosition.Height);
 			}
-			
+		
+			AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleLeftMargin;
 		}
 	}
 }

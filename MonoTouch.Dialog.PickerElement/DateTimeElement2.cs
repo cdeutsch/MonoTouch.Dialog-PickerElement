@@ -262,13 +262,21 @@ namespace MonoTouch.Dialog.PickerElement
 		SizeF ComputeEntryPosition (UITableView tv, UITableViewCell cell)
 		{
 			Section s = Parent as Section;
-			SizeF max = new SizeF (-1, -1);
+			if (s.EntryAlignment.Width != 0)
+				return s.EntryAlignment;
+			
+			// If all EntryElements have a null Caption, align UITextField with the Caption
+			// offset of normal cells (at 10px).
+			SizeF max = new SizeF (-15, tv.StringSize ("M", font).Height);
 			foreach (var e in s.Elements){
 				var ee = e as EntryElement;
-				if (ee != null) {
+				if (ee == null)
+					continue;
+				
+				if (ee.Caption != null) {
 					var size = tv.StringSize (ee.Caption, font);
 					if (size.Width > max.Width)
-						max = size;				
+						max = size;
 				}
 			}
 			s.EntryAlignment = new SizeF (25 + Math.Min (max.Width, 160), max.Height);
@@ -298,12 +306,14 @@ namespace MonoTouch.Dialog.PickerElement
 			
 			if (entry == null){
 				SizeF size = ComputeEntryPosition (tv, cell);
-				var _entry = new UILabel (new RectangleF (size.Width-8, (cell.ContentView.Bounds.Height-size.Height)/2-1, 320-size.Width - 27, size.Height)){
+				var _entry = new UILabel (new RectangleF (size.Width, (cell.ContentView.Bounds.Height-size.Height)/2-1, cell.ContentView.Bounds.Width - size.Width - 10f, size.Height)){
 					Tag = 1,
 					//Placeholder = placeholder ?? "",
 					Text = val,
 					TextAlignment = Alignment,
+					BackgroundColor = UIColor.Clear
 				};
+				_entry.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleLeftMargin;
 				_entry.Text = Value ?? "";	
 				entry = _entry;
 				//entry.AutoresizingMask = UIViewAutoresizing.FlexibleWidth |

@@ -30,11 +30,12 @@ namespace Sample
 			{
 				items.Add (i);
 			}
-			chickenName = new EntryElement("Name", null, "");
+			chickenName = new EntryElement("Name Of", null, "");
 			chickenName.Value = "Big Bird";
 			
 			rating = new PickerElement("Rating", items.ToArray(), null, this) {
 				Width = 40f,
+				ValueWidth = 202f, // use this to align picker value with other elements, for the life of me I can't find a calculation that automatically does it.
 				Alignment = UITextAlignment.Left
 			};			
 			// set initial rating.

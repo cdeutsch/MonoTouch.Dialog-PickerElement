@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoTouch.Dialog.PickerElement", "MonoTouch.Dialog.PickerElement\MonoTouch.Dialog.PickerElement.csproj", "{1D6E5DB1-9F1E-432E-98FC-E45453688661}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{B9619B6A-92B8-4E5E-AB01-C0E0C33E5618}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoTouch.Dialog.PickerElement", "MonoTouch.Dialog.PickerElement\MonoTouch.Dialog.PickerElement.csproj", "{1D6E5DB1-9F1E-432E-98FC-E45453688661}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +19,26 @@ Global
 		AppStore|iPhone = AppStore|iPhone
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.AdHoc|iPhone.ActiveCfg = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.AdHoc|iPhone.Build.0 = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.AdHoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.AdHoc|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
 		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
 		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Release|iPhone.Build.0 = Release|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{1D6E5DB1-9F1E-432E-98FC-E45453688661}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{B9619B6A-92B8-4E5E-AB01-C0E0C33E5618}.AdHoc|iPhone.ActiveCfg = Debug|iPhone
 		{B9619B6A-92B8-4E5E-AB01-C0E0C33E5618}.AdHoc|iPhone.Build.0 = Debug|iPhone
 		{B9619B6A-92B8-4E5E-AB01-C0E0C33E5618}.AdHoc|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator

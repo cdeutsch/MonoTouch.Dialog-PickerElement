@@ -31,7 +31,7 @@ namespace MonoTouch.Dialog.PickerElement
 		public UIColor SelectedBackgroundColor = UIColor.FromRGBA(0.02f, 0.55f, 0.96f, 1f);
 		public UIColor SelectedTextColor = UIColor.White;
 		public bool ShowDoneButton = false;
-		public float ValueWidth = 20f;
+		public float? ValueWidth = null;
 		public UIColor ValueTextColor = UIColor.Black;
 		
 		private UITableViewCell cell = null;
@@ -244,13 +244,21 @@ namespace MonoTouch.Dialog.PickerElement
 		SizeF ComputeEntryPosition (UITableView tv, UITableViewCell cell)
 		{
 			Section s = Parent as Section;
-			SizeF max = new SizeF (-1, -1);
+			if (s.EntryAlignment.Width != 0)
+				return s.EntryAlignment;
+			
+			// If all EntryElements have a null Caption, align UITextField with the Caption
+			// offset of normal cells (at 10px).
+			SizeF max = new SizeF (-15, tv.StringSize ("M", font).Height);
 			foreach (var e in s.Elements){
 				var ee = e as EntryElement;
-				if (ee != null) {
+				if (ee == null)
+					continue;
+				
+				if (ee.Caption != null) {
 					var size = tv.StringSize (ee.Caption, font);
 					if (size.Width > max.Width)
-						max = size;				
+						max = size;
 				}
 			}
 			s.EntryAlignment = new SizeF (25 + Math.Min (max.Width, 160), max.Height);
@@ -262,7 +270,7 @@ namespace MonoTouch.Dialog.PickerElement
 			ComboBox.ViewForPicker = tv.Superview;
 			cell = tv.DequeueReusableCell (Value == null ? skey : skeyvalue);
 			if (cell == null){
-				cell = new NoOverlapTableViewCell (UITableViewCellStyle.Value1, skey, ValueWidth);
+				cell = new NoOverlapTableViewCell (UITableViewCellStyle.Value1, skey);
 				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Blue : UITableViewCellSelectionStyle.None;
 			} else 
 				RemoveTag (cell, 1);
@@ -273,6 +281,11 @@ namespace MonoTouch.Dialog.PickerElement
 			entry.TextAlignment = Alignment;
 			entry.BackgroundColor = UIColor.Clear;
 			entry.TextColor = ValueTextColor;
+			entry.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleLeftMargin;
+			SizeF size = ComputeEntryPosition (tv, cell);
+			((NoOverlapTableViewCell)cell).MaxEntryPosition = size;
+			((NoOverlapTableViewCell)cell).ContentViewBounds = cell.ContentView.Bounds;
+			((NoOverlapTableViewCell)cell).DetailTextLabelWidth = ValueWidth;
 			
 			if (originalEntryBackgroundColor != null) {
 				// modify background color to stay consistant.
