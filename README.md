@@ -28,6 +28,10 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## History ##
 
+### 3/29/2012 ###
+
+* Added support for setting label TextColor for PickerElement
+
 ### 3/26/2012 ###
 
 * Added support for hiding PickerElement without animation.

@@ -32,6 +32,7 @@ namespace MonoTouch.Dialog.PickerElement
 		public UIColor SelectedTextColor = UIColor.White;
 		public bool ShowDoneButton = false;
 		public float? ValueWidth = null;
+		public UIColor TextColor = UIColor.Black;
 		public UIColor ValueTextColor = UIColor.Black;
 		
 		private UITableViewCell cell = null;
@@ -274,6 +275,8 @@ namespace MonoTouch.Dialog.PickerElement
 				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Blue : UITableViewCellSelectionStyle.None;
 			} else 
 				RemoveTag (cell, 1);
+			
+			cell.TextLabel.TextColor = TextColor;
 			
 			entry = cell.DetailTextLabel;
 			entry.Text = Value ?? "";	
