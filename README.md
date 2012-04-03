@@ -28,6 +28,9 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## History ##
 
+### 4/3/2012 ###
+* Fixed bug with DatePickerElement2 re-appearing when an app is closed and relaunched.
+
 ### 3/29/2012 ###
 
 * Added support for setting label TextColor for PickerElement

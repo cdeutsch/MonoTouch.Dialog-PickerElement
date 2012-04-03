@@ -42,12 +42,12 @@ namespace MonoTouch.Dialog.PickerElement
 		}
 			
 		public UIView ViewForPicker; 
-		public UIDatePicker datePicker;
+		public DelegateDatePicker datePicker;
 		public event Action<DateTimeElement2> DateSelected;
 		public event EventHandler PickerClosed;
 		public event EventHandler PickerShown;
 				
-		private DialogViewController Dvc;
+		protected DialogViewController Dvc;
 		private UIButton closeBtn;
 		private UIBarButtonItem oldRightBtn;
 		private UIBarButtonItem doneButton;
@@ -169,7 +169,7 @@ namespace MonoTouch.Dialog.PickerElement
 					
 			UIView.BeginAnimations("slidePickerIn");			
 			UIView.SetAnimationDuration(0.3);
-			UIView.SetAnimationDelegate(parentView);
+			UIView.SetAnimationDelegate(datePicker);
 			UIView.SetAnimationDidStopSelector (new Selector ("fadeInDidFinish"));
 			//parentView.AddSubview(closeView);			
 			parentView.AddSubview(datePicker);
@@ -206,14 +206,14 @@ namespace MonoTouch.Dialog.PickerElement
 				if (Animated) {
 					UIView.BeginAnimations("slidePickerOut");			
 					UIView.SetAnimationDuration(0.3);
-					UIView.SetAnimationDelegate(parentView);			
-					//UIView.SetAnimationDidStopSelector (new Selector ("fadeOutDidFinish"));	
-					datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentH));
+					UIView.SetAnimationDelegate(datePicker);			
+					UIView.SetAnimationDidStopSelector (new Selector ("fadeOutDidFinish"));	
+					datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentH));					
 					UIView.CommitAnimations();
 				}
 				else {
 					parentView.SendSubviewToBack(datePicker);
-					//datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentH));
+					datePicker.Frame = datePicker.Frame.SetLocation(new PointF(0,parentH));
 				}
 				//datePicker.RemoveFromSuperview();
 				
@@ -387,9 +387,9 @@ namespace MonoTouch.Dialog.PickerElement
 			}			
 		}
 		
-		public virtual UIDatePicker CreatePicker ()
+		public virtual DelegateDatePicker CreatePicker ()
 		{
-			var picker = new UIDatePicker (RectangleF.Empty){
+			var picker = new DelegateDatePicker (this){
 				AutoresizingMask = UIViewAutoresizing.FlexibleWidth,
 				Mode = UIDatePickerMode.DateAndTime,
 				Date = DateValue
@@ -434,7 +434,9 @@ namespace MonoTouch.Dialog.PickerElement
 		
 		[Export("fadeOutDidFinish")]
 		public void FadeOutDidFinish ()
-		{	
+		{
+			var parentView = ViewForPicker;
+			parentView.SendSubviewToBack(datePicker);
 		}
 		
 		// MonoTouch.Dialog CUSTOM: Download custom MonoTouch.Dialog from here to enable support for "next" button being clicked.
@@ -469,7 +471,38 @@ namespace MonoTouch.Dialog.PickerElement
 			if (entry != null)
 				HidePicker();
 		}
-		*/
+		*/	
+		
+		public class DelegateDatePicker : UIDatePicker {
+			
+			DateTimeElement2 element;
+			
+			public DelegateDatePicker(DateTimeElement2 Element): base(RectangleF.Empty) {
+				element = Element;
+			}
+			
+			[Export("fadeInDidFinish")]
+			public void FadeInDidFinish ()
+			{
+				if (element.Dvc != null && element.modifiedHeightOffset == 0f) {
+					// adjust size.
+					var ff = element.Dvc.TableView.Frame;
+					element.modifiedHeightOffset = 200f;
+					element.Dvc.TableView.Frame = new RectangleF(ff.X, ff.Y, ff.Width, ff.Height - element.modifiedHeightOffset);
+					element.Dvc.TableView.ScrollToRow (element.IndexPath, UITableViewScrollPosition.Middle, true);
+				}
+			}		
+			
+			[Export("fadeOutDidFinish")]
+			public void FadeOutDidFinish ()
+			{
+				var parentView = element.ViewForPicker;
+				parentView.SendSubviewToBack(element.datePicker);
+			}
+		}
+
+		
 	}
+	
 }
 
