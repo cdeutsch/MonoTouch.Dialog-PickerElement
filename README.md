@@ -30,6 +30,7 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ### 4/3/2012 ###
 * Fixed bug with DatePickerElement2 re-appearing when an app is closed and relaunched.
+* Fixed bug with DateTimeElement2 resizing the label when it redraws.
 
 ### 3/29/2012 ###
 

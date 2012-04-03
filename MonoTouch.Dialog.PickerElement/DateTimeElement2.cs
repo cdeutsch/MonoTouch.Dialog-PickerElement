@@ -304,9 +304,10 @@ namespace MonoTouch.Dialog.PickerElement
 			//cell.Accessory = UITableViewCellAccessory.None;
 			//cell.TextLabel.TextAlignment = Alignment;
 			
-			if (entry == null){
-				SizeF size = ComputeEntryPosition (tv, cell);
-				var _entry = new UILabel (new RectangleF (size.Width, (cell.ContentView.Bounds.Height-size.Height)/2-1, cell.ContentView.Bounds.Width - size.Width - 10f, size.Height)){
+			SizeF size = ComputeEntryPosition (tv, cell);
+			var rectangle = new RectangleF (size.Width, (cell.ContentView.Bounds.Height-size.Height)/2-1, cell.ContentView.Bounds.Width - size.Width - 10f, size.Height);
+			if (entry == null){				
+				var _entry = new UILabel (rectangle){
 					Tag = 1,
 					//Placeholder = placeholder ?? "",
 					Text = val,
@@ -321,6 +322,7 @@ namespace MonoTouch.Dialog.PickerElement
 				
 			}
 			
+			entry.Frame = rectangle;			
 			cell.TextLabel.Text = Caption;
 			cell.ContentView.AddSubview (entry);						
 			return cell;
