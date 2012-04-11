@@ -128,15 +128,15 @@ namespace ClanceysLib
 			pickerView.Frame = pickerView.Frame.SetLocation(new PointF(0,parentFrame.Height - pickerView.Frame.Height));
 			UIView.CommitAnimations();				
 		}
-		bool isHiding;
+		public bool IsHiding;
 		public void HidePicker(bool Animated = true)
 		{
 			var parentView = ViewForPicker ?? Superview;
 			if(PickerClosed!=null)
 				PickerClosed(this,null);
-			if(isHiding || parentView == null)
+			if(IsHiding || parentView == null)
 				return;
-			isHiding = true;
+			IsHiding = true;
 			
 			var parentH = parentView.Frame.Height;
 			
@@ -150,7 +150,7 @@ namespace ClanceysLib
 			}
 			else {
 				parentView.SendSubviewToBack(pickerView);
-				isHiding = false;
+				IsHiding = false;
 			}
 		}
 		
@@ -180,7 +180,7 @@ namespace ClanceysLib
 			pickerView.RemoveFromSuperview();
 			//closeView.RemoveFromSuperview();
 			pickerVisible = false;
-			isHiding = false;
+			IsHiding = false;
 		}
 		[Export("fadeInDidFinish")]
 		public void FadeInDidFinish ()

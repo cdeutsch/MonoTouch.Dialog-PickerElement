@@ -72,7 +72,7 @@ namespace MonoTouch.Dialog.PickerElement
 				}
 			};
 			this.ComboBox.PickerFadeInDidFinish += delegate {
-				if (modifiedHeightOffset == 0f) {
+				if (modifiedHeightOffset == 0f && !ComboBox.IsHiding) {
 					// adjust size.
 					var ff = Dvc.TableView.Frame;
 					modifiedHeightOffset = 200f;

@@ -28,6 +28,9 @@ https://github.com/crdeutsch/MonoTouch.Dialog
 
 ## History ##
 
+### 4/11/2012 ###
+* Fixed bug with rapidly clicking PickerElements causing the view to resizing too many times.
+
 ### 4/3/2012 ###
 * Fixed bug with DatePickerElement2 re-appearing when an app is closed and relaunched.
 * Fixed bug with DateTimeElement2 resizing the label when it redraws.
