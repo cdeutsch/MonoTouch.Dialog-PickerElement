@@ -1,3 +1,7 @@
+# WARNING: Does not work in iOS7 #
+
+Update 10/4/2013: Unfortuantely iOS7 completely broke this component. I currently do not have time to try and fix it, nor does this type of element make sense in iOS7, in my opinion.
+
 # MonoTouch.Dialog PickerElement #
 
 This is a generic UIPicker and a DateTime Picker for MonoTouch.Dialog. 
